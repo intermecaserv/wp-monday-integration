@@ -11,7 +11,7 @@ exports.handler = async function (context, event, callback) {
   const response = await axios.post(
     "https://api.monday.com/v2",
     {
-      query: "query { teams { name picture_url users { created_at phone } } }",
+      query: "query { boards(limit: 100) { name } }",
     },
     {
       headers: {
@@ -20,7 +20,7 @@ exports.handler = async function (context, event, callback) {
       },
     }
   );
-  if (selectedIndex - 1 >= response.data.data.teams.length) {
+  if (selectedIndex - 1 >= response.data.data.boards.length) {
     throw new Error("Invalid index");
   }
   return callback(null, {
