@@ -144,7 +144,7 @@
                 "channel": "{{trigger.message.ChannelSid}}",
                 "from": "{{flow.channel.address}}",
                 "body": "{{widgets.func_get_welcome_message.parsed.text}}",
-                "timeout": "3600"
+                "timeout": "300"
             }
         },
         {
@@ -205,6 +205,7 @@
             "type": "send-message",
             "transitions": [
                 {
+                    "next": "send_wait_project_list",
                     "event": "sent"
                 },
                 {
