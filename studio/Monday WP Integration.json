@@ -1,0 +1,225 @@
+{
+    "description": "A New Flow",
+    "states": [
+        {
+            "name": "Trigger",
+            "type": "trigger",
+            "transitions": [
+                {
+                    "next": "if_order_keyword",
+                    "event": "incomingMessage"
+                },
+                {
+                    "event": "incomingCall"
+                },
+                {
+                    "next": "send_welcome",
+                    "event": "incomingRequest"
+                },
+                {
+                    "event": "incomingParent"
+                }
+            ],
+            "properties": {
+                "offset": {
+                    "x": 50,
+                    "y": 80
+                }
+            }
+        },
+        {
+            "name": "if_order_keyword",
+            "type": "split-based-on",
+            "transitions": [
+                {
+                    "event": "noMatch"
+                },
+                {
+                    "next": "send_welcome",
+                    "event": "match",
+                    "conditions": [
+                        {
+                            "friendly_name": "If value contains comenzi",
+                            "arguments": [
+                                "{{trigger.message.Body}}"
+                            ],
+                            "type": "contains",
+                            "value": "comanda"
+                        }
+                    ]
+                },
+                {
+                    "next": "send_welcome",
+                    "event": "match",
+                    "conditions": [
+                        {
+                            "friendly_name": "If value contains comenzi",
+                            "arguments": [
+                                "{{trigger.message.Body}}"
+                            ],
+                            "type": "contains",
+                            "value": "comenzi"
+                        }
+                    ]
+                }
+            ],
+            "properties": {
+                "input": "{{trigger.message.Body}}",
+                "offset": {
+                    "x": 50,
+                    "y": 300
+                }
+            }
+        },
+        {
+            "name": "func_welcome_list_projects",
+            "type": "run-function",
+            "transitions": [
+                {
+                    "next": "send_wait_project_list",
+                    "event": "success"
+                },
+                {
+                    "next": "send_error",
+                    "event": "fail"
+                }
+            ],
+            "properties": {
+                "service_sid": "ZS09cdc804a17d83dd03fdb7a77465db3e",
+                "environment_sid": "ZE3efb2bf5c09471d6b5c1813030731341",
+                "offset": {
+                    "x": -20,
+                    "y": 870
+                },
+                "function_sid": "ZH78c217ff068f8dc6bfc9120d958d16b1",
+                "url": "https://intermecaserv-2016.twil.io/getListOfProjects"
+            }
+        },
+        {
+            "name": "send_error",
+            "type": "send-message",
+            "transitions": [
+                {
+                    "event": "sent"
+                },
+                {
+                    "event": "failed"
+                }
+            ],
+            "properties": {
+                "offset": {
+                    "x": 940,
+                    "y": 1150
+                },
+                "service": "{{trigger.message.InstanceSid}}",
+                "channel": "{{trigger.message.ChannelSid}}",
+                "from": "{{flow.channel.address}}",
+                "to": "{{contact.channel.address}}",
+                "body": "A aparut o eroare. Va rugam sa reveniti mai tarziu."
+            }
+        },
+        {
+            "name": "send_welcome",
+            "type": "send-message",
+            "transitions": [
+                {
+                    "next": "func_welcome_list_projects",
+                    "event": "sent"
+                },
+                {
+                    "next": "send_error",
+                    "event": "failed"
+                }
+            ],
+            "properties": {
+                "offset": {
+                    "x": 0,
+                    "y": 590
+                },
+                "service": "{{trigger.message.InstanceSid}}",
+                "channel": "{{trigger.message.ChannelSid}}",
+                "from": "{{flow.channel.address}}",
+                "to": "{{contact.channel.address}}",
+                "body": "Bine ati venit. Veti primi lista cu proiectele noastre imediat."
+            }
+        },
+        {
+            "name": "send_wait_project_list",
+            "type": "send-and-wait-for-reply",
+            "transitions": [
+                {
+                    "next": "set_isProjectIndexValid",
+                    "event": "incomingMessage"
+                },
+                {
+                    "next": "send_bye",
+                    "event": "timeout"
+                },
+                {
+                    "next": "send_error",
+                    "event": "deliveryFailure"
+                }
+            ],
+            "properties": {
+                "offset": {
+                    "x": 0,
+                    "y": 1150
+                },
+                "service": "{{trigger.message.InstanceSid}}",
+                "channel": "{{trigger.message.ChannelSid}}",
+                "from": "{{flow.channel.address}}",
+                "body": "{% for i in (0..(widgets.func_welcome_list_projects.parsed.items.size | minus:1)) %}\n  {{ i | plus:1 }} {{widgets.func_welcome_list_projects.parsed.items[i]}}\n{% endfor %}",
+                "timeout": "3600"
+            }
+        },
+        {
+            "name": "send_bye",
+            "type": "send-message",
+            "transitions": [
+                {
+                    "event": "sent"
+                },
+                {
+                    "next": "send_error",
+                    "event": "failed"
+                }
+            ],
+            "properties": {
+                "offset": {
+                    "x": 920,
+                    "y": 720
+                },
+                "service": "{{trigger.message.InstanceSid}}",
+                "channel": "{{trigger.message.ChannelSid}}",
+                "from": "{{flow.channel.address}}",
+                "to": "{{contact.channel.address}}",
+                "body": "La revedere."
+            }
+        },
+        {
+            "name": "set_isProjectIndexValid",
+            "type": "set-variables",
+            "transitions": [
+                {
+                    "event": "next"
+                }
+            ],
+            "properties": {
+                "variables": [
+                    {
+                        "value": "{{(widgets.send_wait_project_list.inbound.Body | times:1) <= widgets.func_welcome_list_projects.parsed.size}}",
+                        "key": "selectedIndexValid"
+                    }
+                ],
+                "offset": {
+                    "x": 0,
+                    "y": 1430
+                }
+            }
+        }
+    ],
+    "initial_state": "Trigger",
+    "flags": {
+        "allow_concurrent_calls": true
+    }
+}
