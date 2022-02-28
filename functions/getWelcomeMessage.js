@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 exports.handler = async function (context, event, callback) {
-  if (event.phoneNo == null) {
+  if (event.phoneNo == null || event.phoneNo.length === 0) {
     throw new Error("No phone number");
   }
 
@@ -127,12 +127,16 @@ exports.handler = async function (context, event, callback) {
     event.othersProjects ? filterOthersProjects : filterMyProjects
   );
 
-  let message = "Bun venit. Aceasta este lista proiectelor dvs:\n";
+  let message = event.othersProjects
+    ? ``
+    : `Bun venit. Aceasta este lista proiectelor dvs:\n`;
   var i = 0;
   for (i = 0; i < myItems.length; i++) {
     message += `${i + 1} ${myItems[i].name}\n`;
   }
-  message += `${i + 1} Proiectele altora\n`;
+  message += `${i + 1} Proiectele ${
+    event.othersProjects ? "mele" : "altora"
+  }\n`;
   message += `Va rugam sa selectati raspunzand doar cu cifra proiectului`;
   return callback(null, {
     text: message,

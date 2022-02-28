@@ -13,7 +13,7 @@
                     "event": "incomingCall"
                 },
                 {
-                    "next": "func_get_welcome_message",
+                    "next": "set_others_projects_false",
                     "event": "incomingRequest"
                 },
                 {
@@ -35,7 +35,7 @@
                     "event": "noMatch"
                 },
                 {
-                    "next": "func_get_welcome_message",
+                    "next": "set_others_projects_false",
                     "event": "match",
                     "conditions": [
                         {
@@ -49,7 +49,7 @@
                     ]
                 },
                 {
-                    "next": "func_get_welcome_message",
+                    "next": "set_others_projects_false",
                     "event": "match",
                     "conditions": [
                         {
@@ -66,8 +66,8 @@
             "properties": {
                 "input": "{{trigger.message.Body}}",
                 "offset": {
-                    "x": 360,
-                    "y": 270
+                    "x": -560,
+                    "y": 280
                 }
             }
         },
@@ -88,10 +88,20 @@
                 "service_sid": "ZS09cdc804a17d83dd03fdb7a77465db3e",
                 "environment_sid": "ZE3efb2bf5c09471d6b5c1813030731341",
                 "offset": {
-                    "x": 70,
-                    "y": 640
+                    "x": 90,
+                    "y": 650
                 },
                 "function_sid": "ZH78c217ff068f8dc6bfc9120d958d16b1",
+                "parameters": [
+                    {
+                        "value": "{{trigger.message.From}}",
+                        "key": "phoneNo"
+                    },
+                    {
+                        "value": "{{flow.variables.othersProjects}}",
+                        "key": "othersProjects"
+                    }
+                ],
                 "url": "https://intermecaserv-2016.twil.io/getWelcomeMessage"
             }
         },
@@ -108,8 +118,8 @@
             ],
             "properties": {
                 "offset": {
-                    "x": 1330,
-                    "y": 1110
+                    "x": 1320,
+                    "y": 1090
                 },
                 "service": "{{trigger.message.InstanceSid}}",
                 "channel": "{{trigger.message.ChannelSid}}",
@@ -137,7 +147,7 @@
             ],
             "properties": {
                 "offset": {
-                    "x": 10,
+                    "x": 70,
                     "y": 1070
                 },
                 "service": "{{trigger.message.InstanceSid}}",
@@ -176,6 +186,7 @@
             "type": "run-function",
             "transitions": [
                 {
+                    "next": "if_others_selected",
                     "event": "success"
                 },
                 {
@@ -188,7 +199,7 @@
                 "environment_sid": "ZE3efb2bf5c09471d6b5c1813030731341",
                 "offset": {
                     "x": 20,
-                    "y": 1420
+                    "y": 1410
                 },
                 "function_sid": "ZH76a2a7d2ee4e47a3c58f376327559477",
                 "parameters": [
@@ -215,14 +226,221 @@
             ],
             "properties": {
                 "offset": {
-                    "x": 870,
-                    "y": 1430
+                    "x": 780,
+                    "y": 1680
                 },
                 "service": "{{trigger.message.InstanceSid}}",
                 "channel": "{{trigger.message.ChannelSid}}",
                 "from": "{{flow.channel.address}}",
                 "to": "{{contact.channel.address}}",
                 "body": "Numar proiect invalid. Reincercati."
+            }
+        },
+        {
+            "name": "set_others_projects_false",
+            "type": "set-variables",
+            "transitions": [
+                {
+                    "next": "func_get_welcome_message",
+                    "event": "next"
+                }
+            ],
+            "properties": {
+                "variables": [
+                    {
+                        "value": "{{nil}}",
+                        "key": "othersProjects"
+                    }
+                ],
+                "offset": {
+                    "x": 280,
+                    "y": 390
+                }
+            }
+        },
+        {
+            "name": "if_others_selected",
+            "type": "split-based-on",
+            "transitions": [
+                {
+                    "next": "send_invalid_project",
+                    "event": "noMatch"
+                },
+                {
+                    "next": "send_wait_order_body",
+                    "event": "match",
+                    "conditions": [
+                        {
+                            "friendly_name": "If value equal_to ok",
+                            "arguments": [
+                                "{{widgets.func_validate_selected_project.parsed.result}}"
+                            ],
+                            "type": "equal_to",
+                            "value": "ok"
+                        }
+                    ]
+                },
+                {
+                    "next": "if_others_projects_true",
+                    "event": "match",
+                    "conditions": [
+                        {
+                            "friendly_name": "If value equal_to others",
+                            "arguments": [
+                                "{{widgets.func_validate_selected_project.parsed.result}}"
+                            ],
+                            "type": "equal_to",
+                            "value": "others"
+                        }
+                    ]
+                }
+            ],
+            "properties": {
+                "input": "{{widgets.func_validate_selected_project.parsed.result}}",
+                "offset": {
+                    "x": -70,
+                    "y": 1780
+                }
+            }
+        },
+        {
+            "name": "set_others_projects_true_2",
+            "type": "set-variables",
+            "transitions": [
+                {
+                    "next": "func_get_welcome_message",
+                    "event": "next"
+                }
+            ],
+            "properties": {
+                "variables": [
+                    {
+                        "value": "{{true}}",
+                        "key": "othersProjects"
+                    }
+                ],
+                "offset": {
+                    "x": 370,
+                    "y": 2400
+                }
+            }
+        },
+        {
+            "name": "if_others_projects_true",
+            "type": "split-based-on",
+            "transitions": [
+                {
+                    "event": "noMatch"
+                },
+                {
+                    "next": "set_others_projects_false_2",
+                    "event": "match",
+                    "conditions": [
+                        {
+                            "friendly_name": "If value equal_to {{true}}",
+                            "arguments": [
+                                "{{flow.variables.othersProjects}}"
+                            ],
+                            "type": "is_not_blank",
+                            "value": "Is Not Blank"
+                        }
+                    ]
+                },
+                {
+                    "next": "set_others_projects_true_2",
+                    "event": "match",
+                    "conditions": [
+                        {
+                            "friendly_name": "{{flow.variables.othersProjects}}",
+                            "arguments": [
+                                "{{flow.variables.othersProjects}}"
+                            ],
+                            "type": "is_blank",
+                            "value": "Is Blank"
+                        }
+                    ]
+                }
+            ],
+            "properties": {
+                "input": "{{flow.variables.othersProjects}}",
+                "offset": {
+                    "x": 20,
+                    "y": 2110
+                }
+            }
+        },
+        {
+            "name": "set_others_projects_false_2",
+            "type": "set-variables",
+            "transitions": [
+                {
+                    "next": "func_get_welcome_message",
+                    "event": "next"
+                }
+            ],
+            "properties": {
+                "variables": [
+                    {
+                        "value": "{{nil}}",
+                        "key": "othersProjects"
+                    }
+                ],
+                "offset": {
+                    "x": -30,
+                    "y": 2400
+                }
+            }
+        },
+        {
+            "name": "send_wait_order_body",
+            "type": "send-and-wait-for-reply",
+            "transitions": [
+                {
+                    "next": "send_thanks",
+                    "event": "incomingMessage"
+                },
+                {
+                    "next": "send_bye",
+                    "event": "timeout"
+                },
+                {
+                    "next": "send_error",
+                    "event": "deliveryFailure"
+                }
+            ],
+            "properties": {
+                "offset": {
+                    "x": -750,
+                    "y": 1880
+                },
+                "service": "{{trigger.message.InstanceSid}}",
+                "channel": "{{trigger.message.ChannelSid}}",
+                "from": "{{flow.channel.address}}",
+                "body": "Ati selectat proiectul {{widgets.func_validate_selected_project.parsed.projectName}} . Urmatorul mesaj va fi inregistrat ca si comanda.",
+                "timeout": "300"
+            }
+        },
+        {
+            "name": "send_thanks",
+            "type": "send-message",
+            "transitions": [
+                {
+                    "event": "sent"
+                },
+                {
+                    "event": "failed"
+                }
+            ],
+            "properties": {
+                "offset": {
+                    "x": -998,
+                    "y": 2198
+                },
+                "service": "{{trigger.message.InstanceSid}}",
+                "channel": "{{trigger.message.ChannelSid}}",
+                "from": "{{flow.channel.address}}",
+                "to": "{{contact.channel.address}}",
+                "body": "Got it, thanks"
             }
         }
     ],
