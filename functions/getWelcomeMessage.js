@@ -1,65 +1,5 @@
 const axios = require("axios");
 
-const filterMyProjects = (x) => {
-  const foundColumn = x.column_values.find((x) => x.id === "person");
-  if (
-    foundColumn == null ||
-    foundColumn.value == null ||
-    foundColumn.value.length === 0
-  ) {
-    return false;
-  }
-  try {
-    const valueObj = JSON.parse(foundColumn.value);
-    if (
-      valueObj.personsAndTeams == null ||
-      valueObj.personsAndTeams.length === 0
-    ) {
-      return false;
-    }
-    return (
-      valueObj.personsAndTeams.findIndex(
-        (z) =>
-          (z.kind === "person" && z.id === foundUser.id) ||
-          (z.kind === "team" &&
-            foundUser.teams.findIndex((t) => t.id === z.id) > -1)
-      ) > -1
-    );
-  } catch (err) {
-    return false;
-  }
-};
-
-const filterOthersProjects = (x) => {
-  const foundColumn = x.column_values.find((x) => x.id === "person");
-  if (
-    foundColumn == null ||
-    foundColumn.value == null ||
-    foundColumn.value.length === 0
-  ) {
-    return true;
-  }
-  try {
-    const valueObj = JSON.parse(foundColumn.value);
-    if (
-      valueObj.personsAndTeams == null ||
-      valueObj.personsAndTeams.length === 0
-    ) {
-      return true;
-    }
-    return (
-      valueObj.personsAndTeams.findIndex(
-        (z) =>
-          (z.kind === "person" && z.id === foundUser.id) ||
-          (z.kind === "team" &&
-            foundUser.teams.findIndex((t) => t.id === z.id) > -1)
-      ) === -1
-    );
-  } catch (err) {
-    return true;
-  }
-};
-
 exports.handler = async function (context, event, callback) {
   if (event.phoneNo == null) {
     throw new Error("No phone number");
@@ -122,6 +62,66 @@ exports.handler = async function (context, event, callback) {
       },
     }
   );
+
+  const filterMyProjects = (x) => {
+    const foundColumn = x.column_values.find((x) => x.id === "person");
+    if (
+      foundColumn == null ||
+      foundColumn.value == null ||
+      foundColumn.value.length === 0
+    ) {
+      return false;
+    }
+    try {
+      const valueObj = JSON.parse(foundColumn.value);
+      if (
+        valueObj.personsAndTeams == null ||
+        valueObj.personsAndTeams.length === 0
+      ) {
+        return false;
+      }
+      return (
+        valueObj.personsAndTeams.findIndex(
+          (z) =>
+            (z.kind === "person" && z.id === foundUser.id) ||
+            (z.kind === "team" &&
+              foundUser.teams.findIndex((t) => t.id === z.id) > -1)
+        ) > -1
+      );
+    } catch (err) {
+      return false;
+    }
+  };
+
+  const filterOthersProjects = (x) => {
+    const foundColumn = x.column_values.find((x) => x.id === "person");
+    if (
+      foundColumn == null ||
+      foundColumn.value == null ||
+      foundColumn.value.length === 0
+    ) {
+      return true;
+    }
+    try {
+      const valueObj = JSON.parse(foundColumn.value);
+      if (
+        valueObj.personsAndTeams == null ||
+        valueObj.personsAndTeams.length === 0
+      ) {
+        return true;
+      }
+      return (
+        valueObj.personsAndTeams.findIndex(
+          (z) =>
+            (z.kind === "person" && z.id === foundUser.id) ||
+            (z.kind === "team" &&
+              foundUser.teams.findIndex((t) => t.id === z.id) > -1)
+        ) === -1
+      );
+    } catch (err) {
+      return true;
+    }
+  };
 
   const myItems = projectsResponse.data.data.boards[0].items.filter(
     event.othersProjects ? filterOthersProjects : filterMyProjects
