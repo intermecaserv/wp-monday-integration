@@ -13,7 +13,14 @@ exports.handler = async function (context, event, callback) {
       },
     }
   );
+  let message = "Bun venit. Aceasta este lista de proiecte:\n";
+  for (let i = 0; i < response.data.data.teams.length; i++) {
+    message += `${i + 1} ${response.data.data.teams[i].name}\n`;
+  }
+  message += `Va rugam sa selectati raspunzand doar cu cifra proiectului`;
   return callback(null, {
-    items: response.data.data.teams.map((x) => x.name),
+    text: message,
+    teamNames: response.data.data.teams.map((x) => x.name),
+    teamNamesCount: response.data.data.teams.length,
   });
 };

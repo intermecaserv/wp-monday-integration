@@ -13,7 +13,7 @@
                     "event": "incomingCall"
                 },
                 {
-                    "next": "send_welcome",
+                    "next": "func_get_welcome_message",
                     "event": "incomingRequest"
                 },
                 {
@@ -35,7 +35,7 @@
                     "event": "noMatch"
                 },
                 {
-                    "next": "send_welcome",
+                    "next": "func_get_welcome_message",
                     "event": "match",
                     "conditions": [
                         {
@@ -49,7 +49,7 @@
                     ]
                 },
                 {
-                    "next": "send_welcome",
+                    "next": "func_get_welcome_message",
                     "event": "match",
                     "conditions": [
                         {
@@ -66,13 +66,13 @@
             "properties": {
                 "input": "{{trigger.message.Body}}",
                 "offset": {
-                    "x": 50,
-                    "y": 300
+                    "x": 360,
+                    "y": 270
                 }
             }
         },
         {
-            "name": "func_welcome_list_projects",
+            "name": "func_get_welcome_message",
             "type": "run-function",
             "transitions": [
                 {
@@ -88,11 +88,11 @@
                 "service_sid": "ZS09cdc804a17d83dd03fdb7a77465db3e",
                 "environment_sid": "ZE3efb2bf5c09471d6b5c1813030731341",
                 "offset": {
-                    "x": -20,
-                    "y": 870
+                    "x": 70,
+                    "y": 640
                 },
                 "function_sid": "ZH78c217ff068f8dc6bfc9120d958d16b1",
-                "url": "https://intermecaserv-2016.twil.io/getListOfProjects"
+                "url": "https://intermecaserv-2016.twil.io/getWelcomeMessage"
             }
         },
         {
@@ -108,8 +108,8 @@
             ],
             "properties": {
                 "offset": {
-                    "x": 940,
-                    "y": 1150
+                    "x": 1330,
+                    "y": 1110
                 },
                 "service": "{{trigger.message.InstanceSid}}",
                 "channel": "{{trigger.message.ChannelSid}}",
@@ -119,36 +119,11 @@
             }
         },
         {
-            "name": "send_welcome",
-            "type": "send-message",
-            "transitions": [
-                {
-                    "next": "func_welcome_list_projects",
-                    "event": "sent"
-                },
-                {
-                    "next": "send_error",
-                    "event": "failed"
-                }
-            ],
-            "properties": {
-                "offset": {
-                    "x": 0,
-                    "y": 590
-                },
-                "service": "{{trigger.message.InstanceSid}}",
-                "channel": "{{trigger.message.ChannelSid}}",
-                "from": "{{flow.channel.address}}",
-                "to": "{{contact.channel.address}}",
-                "body": "Bine ati venit. Veti primi lista cu proiectele noastre imediat."
-            }
-        },
-        {
             "name": "send_wait_project_list",
             "type": "send-and-wait-for-reply",
             "transitions": [
                 {
-                    "next": "set_isProjectIndexValid",
+                    "next": "func_validate_selected_project",
                     "event": "incomingMessage"
                 },
                 {
@@ -162,13 +137,13 @@
             ],
             "properties": {
                 "offset": {
-                    "x": 0,
-                    "y": 1150
+                    "x": 10,
+                    "y": 1070
                 },
                 "service": "{{trigger.message.InstanceSid}}",
                 "channel": "{{trigger.message.ChannelSid}}",
                 "from": "{{flow.channel.address}}",
-                "body": "{% for i in (0..(widgets.func_welcome_list_projects.parsed.items.size | minus:1)) %}\n  {{ i | plus:1 }} {{widgets.func_welcome_list_projects.parsed.items[i]}}\n{% endfor %}",
+                "body": "{{widgets.func_get_welcome_message.parsed.text}}",
                 "timeout": "3600"
             }
         },
@@ -186,8 +161,8 @@
             ],
             "properties": {
                 "offset": {
-                    "x": 920,
-                    "y": 720
+                    "x": 880,
+                    "y": 680
                 },
                 "service": "{{trigger.message.InstanceSid}}",
                 "channel": "{{trigger.message.ChannelSid}}",
@@ -197,24 +172,56 @@
             }
         },
         {
-            "name": "set_isProjectIndexValid",
-            "type": "set-variables",
+            "name": "func_validate_selected_project",
+            "type": "run-function",
             "transitions": [
                 {
-                    "event": "next"
+                    "event": "success"
+                },
+                {
+                    "next": "send_invalid_project",
+                    "event": "fail"
                 }
             ],
             "properties": {
-                "variables": [
+                "service_sid": "ZS09cdc804a17d83dd03fdb7a77465db3e",
+                "environment_sid": "ZE3efb2bf5c09471d6b5c1813030731341",
+                "offset": {
+                    "x": 20,
+                    "y": 1420
+                },
+                "function_sid": "ZH76a2a7d2ee4e47a3c58f376327559477",
+                "parameters": [
                     {
-                        "value": "{{(widgets.send_wait_project_list.inbound.Body | times:1) <= widgets.func_welcome_list_projects.parsed.size}}",
-                        "key": "selectedIndexValid"
+                        "value": "{{widgets.send_wait_project_list.inbound.Body}}",
+                        "key": "selectedIndex"
                     }
                 ],
-                "offset": {
-                    "x": 0,
-                    "y": 1430
+                "url": "https://intermecaserv-2016.twil.io/validateSelectedProject"
+            }
+        },
+        {
+            "name": "send_invalid_project",
+            "type": "send-message",
+            "transitions": [
+                {
+                    "event": "sent"
+                },
+                {
+                    "next": "send_error",
+                    "event": "failed"
                 }
+            ],
+            "properties": {
+                "offset": {
+                    "x": 870,
+                    "y": 1430
+                },
+                "service": "{{trigger.message.InstanceSid}}",
+                "channel": "{{trigger.message.ChannelSid}}",
+                "from": "{{flow.channel.address}}",
+                "to": "{{contact.channel.address}}",
+                "body": "Numar proiect invalid. Reincercati."
             }
         }
     ],
