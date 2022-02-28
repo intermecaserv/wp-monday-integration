@@ -1,10 +1,85 @@
 const axios = require("axios");
 
+const filterMyProjects = (x) => {
+  const foundColumn = x.column_values.find((x) => x.id === "person");
+  if (
+    foundColumn == null ||
+    foundColumn.value == null ||
+    foundColumn.value.length === 0
+  ) {
+    return false;
+  }
+  try {
+    const valueObj = JSON.parse(foundColumn.value);
+    if (
+      valueObj.personsAndTeams == null ||
+      valueObj.personsAndTeams.length === 0
+    ) {
+      return false;
+    }
+    return (
+      valueObj.personsAndTeams.findIndex(
+        (z) =>
+          (z.kind === "person" && z.id === foundUser.id) ||
+          (z.kind === "team" &&
+            foundUser.teams.findIndex((t) => t.id === z.id) > -1)
+      ) > -1
+    );
+  } catch (err) {
+    return false;
+  }
+};
+
+const filterOthersProjects = (x) => {
+  const foundColumn = x.column_values.find((x) => x.id === "person");
+  if (
+    foundColumn == null ||
+    foundColumn.value == null ||
+    foundColumn.value.length === 0
+  ) {
+    return true;
+  }
+  try {
+    const valueObj = JSON.parse(foundColumn.value);
+    if (
+      valueObj.personsAndTeams == null ||
+      valueObj.personsAndTeams.length === 0
+    ) {
+      return true;
+    }
+    return (
+      valueObj.personsAndTeams.findIndex(
+        (z) =>
+          (z.kind === "person" && z.id === foundUser.id) ||
+          (z.kind === "team" &&
+            foundUser.teams.findIndex((t) => t.id === z.id) > -1)
+      ) === -1
+    );
+  } catch (err) {
+    return true;
+  }
+};
+
 exports.handler = async function (context, event, callback) {
-  const response = await axios.post(
-    "https://api.monday.com/v2",
+  if (event.phoneNo == null) {
+    throw new Error("No phone number");
+  }
+
+  const usersResponse = await axios.post(
+    `https://api.monday.com/v2`,
     {
-      query: "query { boards(limit: 100) { name } }",
+      query: `
+    query {
+    users(ids: 28458867) {
+        id
+        phone
+        mobile_phone
+        teams {
+          id
+        }
+    }
+}
+    `,
     },
     {
       headers: {
@@ -13,10 +88,51 @@ exports.handler = async function (context, event, callback) {
       },
     }
   );
-  let message = "Bun venit. Aceasta este lista de proiecte:\n";
-  for (let i = 0; i < response.data.data.boards.length; i++) {
-    message += `${i + 1} ${response.data.data.boards[i].name}\n`;
+  const foundUser = usersResponse.data.data.users.find(
+    (x) => x.mobile_phone === event.phoneNo || x.phone === event.phoneNo
+  );
+  if (foundUser == null) {
+    throw new Error("User not found");
   }
+
+  const projectsResponse = await axios.post(
+    "https://api.monday.com/v2",
+    {
+      query: `
+    query {
+  boards (ids: ${context.board_id}) {
+    id
+    name
+    items {
+      id
+      name
+      column_values {
+          id
+          value
+      }
+    }
+  }
+}
+    `,
+    },
+    {
+      headers: {
+        Authorization: context.monday_token,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  const myItems = projectsResponse.data.data.boards[0].items.filter(
+    event.othersProjects ? filterOthersProjects : filterMyProjects
+  );
+
+  let message = "Bun venit. Aceasta este lista proiectelor dvs:\n";
+  var i = 0;
+  for (i = 0; i < myItems.length; i++) {
+    message += `${i + 1} ${myItems[i].name}\n`;
+  }
+  message += `${i} Proiectele altora\n`;
   message += `Va rugam sa selectati raspunzand doar cu cifra proiectului`;
   return callback(null, {
     text: message,
