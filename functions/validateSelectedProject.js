@@ -25,5 +25,6 @@ exports.handler = async function (context, event, callback) {
   }
   return callback(null, {
     valid: true,
+    projectName: response.data.data.boards[selectedIndex - 1].name,
   });
 };
