@@ -132,7 +132,7 @@ exports.handler = async function (context, event, callback) {
   for (i = 0; i < myItems.length; i++) {
     message += `${i + 1} ${myItems[i].name}\n`;
   }
-  message += `${i} Proiectele altora\n`;
+  message += `${i + 1} Proiectele altora\n`;
   message += `Va rugam sa selectati raspunzand doar cu cifra proiectului`;
   return callback(null, {
     text: message,
