@@ -10,7 +10,7 @@ exports.handler = async function (context, event, callback) {
     {
       query: `
     query {
-    users(ids: 28458867) {
+    users(limit: 100) {
         id
         phone
         mobile_phone
@@ -132,12 +132,12 @@ exports.handler = async function (context, event, callback) {
     : `Bun venit. Aceasta este lista proiectelor dvs:\n`;
   var i = 0;
   for (i = 0; i < myItems.length; i++) {
-    message += `${i + 1} ${myItems[i].name}\n`;
+    message += `"${i + 1}" = ${myItems[i].name}\n`;
   }
-  message += `${i + 1} Proiectele ${
+  message += `"altele" = Proiectele ${
     event.othersProjects ? "mele" : "altora"
   }\n`;
-  message += `Va rugam sa selectati raspunzand doar cu cifra proiectului`;
+  message += `Va rugam sa selectati raspunzand doar cu cifra proiectului sau "altele"`;
   return callback(null, {
     text: message,
   });

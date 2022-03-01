@@ -11,12 +11,16 @@ exports.handler = async function (context, event, callback) {
 
   const index = +event.selectedIndex;
 
+  if (index < 1 || index > myItems.length) {
+    throw new Error("Invalid index");
+  }
+
   const usersResponse = await axios.post(
     `https://api.monday.com/v2`,
     {
       query: `
     query {
-    users(ids: 28458867) {
+    users(limit: 100) {
         id
         phone
         mobile_phone
@@ -133,19 +137,8 @@ exports.handler = async function (context, event, callback) {
     event.othersProjects ? filterOthersProjects : filterMyProjects
   );
 
-  if (index > myItems.length + 1) {
-    throw new Error("Invalid index");
-  }
-
-  if (index === myItems.length + 1 && event.othersProjects) {
-    return callback(null, {
-      result: "others",
-      projectName: null,
-    });
-  }
-
   return callback(null, {
-    result: "ok",
     projectName: myItems[i - 1].name,
+    projectId: myItems[i - 1].id,
   });
 };
