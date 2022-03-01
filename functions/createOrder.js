@@ -56,6 +56,10 @@ exports.handler = async function (context, event, callback) {
         personsAndTeams: [{ id: foundUser.id, kind: "person" }],
       }),
     },
+    {
+      id: "text",
+      value: event.order,
+    },
   ];
   const q = `
 mutation {
