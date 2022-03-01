@@ -49,18 +49,9 @@ exports.handler = async function (context, event, callback) {
     throw new Error("User not found");
   }
 
-  const colValues = [
-    {
-      id: "person",
-      value: JSON.stringify({
-        personsAndTeams: [{ id: foundUser.id, kind: "person" }],
-      }),
-    },
-    {
-      id: "text",
-      value: event.order,
-    },
-  ];
+  const colValues = {
+    person: { personsAndTeams: [{ id: foundUser.id, kind: "person" }] },
+  };
   const q = `
 mutation {
     create_subitem (parent_item_id: ${itemId}, item_name: "${
@@ -70,6 +61,7 @@ mutation {
     }
 }
     `;
+
   const createResponse = await axios.post(
     `https://api.monday.com/v2`,
     {
