@@ -52,26 +52,25 @@ exports.handler = async function (context, event, callback) {
   const colValues = [
     {
       id: "person",
-      value: JSON.stringify(
-        JSON.stringify({
-          personsAndTeams: [{ id: foundUser.id, kind: "person" }],
-        })
-      ),
+      value: JSON.stringify({
+        personsAndTeams: [{ id: foundUser.id, kind: "person" }],
+      }),
     },
   ];
-
-  const createResponse = await axios.post(
-    `https://api.monday.com/v2`,
-    {
-      query: `
+  const q = `
 mutation {
     create_subitem (parent_item_id: ${itemId}, item_name: "${
-        event.order
-      }", column_values: "${JSON.stringify(JSON.stringify(colValues))}") {
+    event.order
+  }", column_values: "${JSON.stringify(JSON.stringify(colValues))}") {
         id
     }
 }
-    `,
+    `;
+  console.log(q);
+  const createResponse = await axios.post(
+    `https://api.monday.com/v2`,
+    {
+      query: q,
     },
     {
       headers: {
@@ -83,5 +82,6 @@ mutation {
 
   return callback(null, {
     ok: true,
+    response: createResponse.data,
   });
 };
