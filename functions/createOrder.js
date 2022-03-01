@@ -81,6 +81,6 @@ mutation {
 
   return callback(null, {
     ok: true,
-    response: createResponse.data,
+    orderId: createResponse.data.create_subitem.id,
   });
 };
