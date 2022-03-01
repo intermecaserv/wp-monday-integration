@@ -65,7 +65,7 @@ exports.handler = async function (context, event, callback) {
     {
       query: `
 mutation {
-    create_subitem (parent_item_id: ${projectId}, item_name: "${
+    create_subitem (parent_item_id: ${itemId}, item_name: "${
         event.order
       }", column_values: "${JSON.stringify(JSON.stringify(colValues))}") {
         id
