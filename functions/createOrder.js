@@ -61,12 +61,11 @@ exports.handler = async function (context, event, callback) {
 mutation {
     create_subitem (parent_item_id: ${itemId}, item_name: "${
     event.order
-  }", column_values: "${JSON.stringify(JSON.stringify(colValues))}") {
+  }", column_values: ${JSON.stringify(JSON.stringify(colValues))}) {
         id
     }
 }
     `;
-  console.log(q);
   const createResponse = await axios.post(
     `https://api.monday.com/v2`,
     {
