@@ -39,7 +39,7 @@
                     "event": "match",
                     "conditions": [
                         {
-                            "friendly_name": "If value contains comenzi",
+                            "friendly_name": "If value contains comanda",
                             "arguments": [
                                 "{{trigger.message.Body}}"
                             ],
