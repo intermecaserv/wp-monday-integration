@@ -107,7 +107,7 @@ query {
   for (let nr of listOfPhoneNos) {
     try {
       await twilioClient.messages.create({
-        // from: 'whatsapp:+552120420682',
+        from: "whatsapp:" + context.senderNo,
         body: message,
         to: "whatsapp:" + nr,
       });
