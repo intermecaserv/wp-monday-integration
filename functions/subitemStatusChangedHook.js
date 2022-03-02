@@ -101,6 +101,7 @@ query {
   ];
 
   // TODO
+  let message = `Comanda ${subitem.name} a fost marcata ca Finalizata.`;
 
   return callback(null, { ok: listOfPhoneNos });
 };
