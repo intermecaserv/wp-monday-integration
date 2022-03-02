@@ -1,6 +1,10 @@
 const axios = require("axios");
 
 exports.handler = async function (context, event, callback) {
+  if (event.secret == null || event.secret !== context.secret) {
+    throw new Exception("Unauthorized");
+  }
+
   if (event.challenge) {
     return callback(null, { challenge: event.challenge });
   }
