@@ -2,7 +2,7 @@ const keywords = ["comanda", "comenzi"];
 
 exports.handler = function (context, event, callback) {
   if (event.text == null || event.text.length === 0) {
-    return callback(null, {valid: false});
+    throw new Error("Invalid");
   }
   const textLower = event.text.toLowerCase();
   for (const keyword of keywords) {
@@ -10,5 +10,5 @@ exports.handler = function (context, event, callback) {
       return callback(null, {valid: true});
     }
   }
-  return callback(null, {valid: false});
+    throw new Error('Invalid');
 };
