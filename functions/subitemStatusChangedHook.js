@@ -1,4 +1,5 @@
 const axios = require("axios");
+const twilio = require("twilio");
 
 exports.handler = async function (context, event, callback) {
   if (event.secret == null || event.secret !== context.secret) {
@@ -102,6 +103,18 @@ query {
 
   // TODO
   let message = `Comanda ${subitem.name} a fost marcata ca Finalizata.`;
-
+  const twilioClient = twilio(context.ACCOUNT_SID, context.AUTH_TOKEN);
+  for (let nr of listOfPhoneNos) {
+    try {
+      await twilioClient.messages.create({
+        // from: 'whatsapp:+552120420682',
+        body: message,
+        to: "whatsapp:" + nr,
+      });
+    } catch (e) {
+      // ignored
+      console.error(e);
+    }
+  }
   return callback(null, { ok: listOfPhoneNos });
 };
