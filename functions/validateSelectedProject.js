@@ -5,7 +5,7 @@ exports.handler = async function (context, event, callback) {
     throw new Error("No phone number");
   }
 
-  if (event.selectedIndex == null || !Number.isNaN(+event.selectedIndex)) {
+  if (event.selectedIndex == null || Number.isNaN(+event.selectedIndex)) {
     throw new Error("Invalid index");
   }
 
