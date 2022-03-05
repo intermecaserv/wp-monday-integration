@@ -334,7 +334,7 @@
                 "channel": "{{trigger.message.ChannelSid}}",
                 "from": "{{flow.channel.address}}",
                 "to": "{{contact.channel.address}}",
-                "body": "Comanda cu nr. {{widgets.func_create_order.parsed.orderId}} a fost inregistrata. Multumim!"
+                "body": "Comanda cu nr. {{widgets.func_create_order.parsed.itemId}} a fost inregistrata. Multumim!"
             }
         },
         {
