@@ -58,7 +58,7 @@
                         "key": "othersProjects"
                     }
                 ],
-                "url": "https://intermecaserv-2016.twil.io/getWelcomeMessage"
+                "url": "https://intermecaserv-2823.twil.io/getWelcomeMessage"
             }
         },
         {
@@ -164,7 +164,7 @@
                         "key": "selectedIndex"
                     }
                 ],
-                "url": "https://intermecaserv-2016.twil.io/validateSelectedProject"
+                "url": "https://intermecaserv-2823.twil.io/validateSelectedProject"
             }
         },
         {
@@ -412,7 +412,7 @@
                         "key": "order"
                     }
                 ],
-                "url": "https://intermecaserv-2016.twil.io/createOrder"
+                "url": "https://intermecaserv-2823.twil.io/createOrder"
             }
         },
         {
@@ -441,7 +441,7 @@
                         "key": "text"
                     }
                 ],
-                "url": "https://intermecaserv-2016.twil.io/isValidKeyword"
+                "url": "https://intermecaserv-2823.twil.io/isValidKeyword"
             }
         }
     ],
