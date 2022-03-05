@@ -138,7 +138,7 @@ exports.handler = async function (context, event, callback) {
   }
 
   return callback(null, {
-    projectName: myItems[i - 1].name,
-    projectId: myItems[i - 1].id,
+    projectName: myItems[index - 1].name,
+    projectId: myItems[index - 1].id,
   });
 };
