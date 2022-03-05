@@ -162,6 +162,10 @@
                     {
                         "value": "{{widgets.send_wait_project_list.inbound.Body}}",
                         "key": "selectedIndex"
+                    },
+                    {
+                        "value": "{{trigger.message.From}}",
+                        "key": "phoneNo"
                     }
                 ],
                 "url": "https://intermecaserv-2823.twil.io/validateSelectedProject"
@@ -428,13 +432,13 @@
                 }
             ],
             "properties": {
-                "service_sid": "ZS09cdc804a17d83dd03fdb7a77465db3e",
-                "environment_sid": "ZE3efb2bf5c09471d6b5c1813030731341",
+                "service_sid": "ZSd8969ac2b11ecec56bfc56b525815d9e",
+                "environment_sid": "ZEd78a1c28a5d969f73c2f49513e9f5d47",
                 "offset": {
                     "x": -150,
                     "y": 240
                 },
-                "function_sid": "ZH91ff700c049cf120b2050c13573f4882",
+                "function_sid": "ZHbac49a4dc7cd795e60d18f882f9d5772",
                 "parameters": [
                     {
                         "value": "{{trigger.message.Body}}",
